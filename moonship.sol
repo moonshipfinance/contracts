@@ -1,4 +1,9 @@
 /**
+ *Submitted for verification at hecoinfo.com on 2021-05-21
+*/
+
+//SPDX-License-Identifier: Unlicensed
+/**
  * Source: https://bscscan.com/address/0x68590a47578e5060a29fd99654f4556dbfa05d10#code
  * Certik Audit: https://www.certik.org/projects/moonratfinance
  * Cooperate with NUT: changed from BEP20 to HECO, using Nut.Money for swap.
@@ -722,6 +727,10 @@ library Utils {
 
         // now calculate reward
         uint256 reward = bnbPool.mul(multiplier).mul(currentBalance).div(100).div(totalSupply);
+        
+        // disable warning
+        _tTotal;
+        ofAddress;
 
         return reward;
     }
@@ -731,7 +740,7 @@ library Utils {
         uint256 basedRewardCycleBlock,
         uint256 threshHoldTopUpRate,
         uint256 amount
-    ) public returns (uint256) {
+    ) public view returns (uint256) {
         if (currentRecipientBalance == 0) {
             return block.timestamp + basedRewardCycleBlock;
         }
@@ -904,13 +913,13 @@ contract MoonShip is Context, IBEP20, Ownable, ReentrancyGuard {
     address[] private _excluded;
 
     uint256 private constant MAX = ~uint256(0);
-    uint256 private _tTotal = 1000000000 * 10 ** 6 * 10 ** 9;
+    uint256 private _tTotal = 1000000000 * 10 ** 6 * 10 ** 18;
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
 
     string private _name = "MoonShip Token";
     string private _symbol = "MSP";
-    uint8 private _decimals = 9;
+    uint8 private _decimals = 18;
 
     InutRouter02 public immutable nutRouter;
     address public immutable nutPair;
@@ -1304,7 +1313,7 @@ contract MoonShip is Context, IBEP20, Ownable, ReentrancyGuard {
     }
 
     function calculateBNBReward(address ofAddress) public view returns (uint256) {
-        uint256 totalSupply = uint256(_tTotal)
+        uint256 tSupply = uint256(_tTotal)
         .sub(balanceOf(address(0)))
         .sub(balanceOf(0x000000000000000000000000000000000000dEaD)) // exclude burned wallet
         .sub(balanceOf(0x0d15E114cdD9F3f2B3bc0De19D5C9c5e4994ee8F)) // exclude dev wallet
@@ -1316,7 +1325,7 @@ contract MoonShip is Context, IBEP20, Ownable, ReentrancyGuard {
             balanceOf(address(ofAddress)),
             address(this).balance,
             winningDoubleRewardPercentage,
-            totalSupply,
+            tSupply,
             ofAddress
         );
     }
@@ -1367,7 +1376,7 @@ contract MoonShip is Context, IBEP20, Ownable, ReentrancyGuard {
         address to,
         uint256 amount,
         uint256 value
-    ) private {
+    ) private view {
         if (
             _isExcludedFromMaxTx[from] == false && // default will be false
             _isExcludedFromMaxTx[to] == false // default will be false
